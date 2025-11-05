@@ -55,7 +55,7 @@ public:
     return true;
   }
 
-  [[nodiscard]] constexpr auto subsv(unsigned idx) const {
+  [[nodiscard]] constexpr auto subview(unsigned idx) const {
     struct pair {
       sv before;
       sv after;
@@ -66,7 +66,7 @@ public:
       .after { m_data + idx, m_len - idx },
     };
   }
-  [[nodiscard]] constexpr auto subsv(unsigned idx, unsigned sz) const {
+  [[nodiscard]] constexpr auto subview(unsigned idx, unsigned sz) const {
     struct trio {
       sv before;
       sv middle;
@@ -74,10 +74,10 @@ public:
     };
     if (idx >= m_len) return trio { *this, {}, {} };
 
-    auto [b, mm] = subsv(idx);
+    auto [b, mm] = subview(idx);
     if (idx + sz >= m_len) return trio { b, mm, {} };
 
-    auto [m, a] = mm.subsv(sz);
+    auto [m, a] = mm.subview(sz);
     return trio { b, m, a };
   }
   [[nodiscard]] constexpr auto split(char c) const {
@@ -184,16 +184,16 @@ static_assert(!"abcd"_sv.ends_with("abcde"));
 static_assert(!"x"_sv.ends_with("y"));
 
 static_assert([] {
-  const auto &[a, b] = "jute"_sv.subsv(2);
+  const auto &[a, b] = "jute"_sv.subview(2);
   return a == "ju"_sv && b == "te"_sv;
 }());
 
 static_assert([] {
-  const auto &[a, b, c] = "jute"_sv.subsv(2, 1);
+  const auto &[a, b, c] = "jute"_sv.subview(2, 1);
   return a == "ju"_sv && b == "t"_sv && c == "e"_sv;
 }());
 static_assert([] {
-  const auto &[a, b, c] = "jute"_sv.subsv(2, 0);
+  const auto &[a, b, c] = "jute"_sv.subview(2, 0);
   return a == "ju"_sv && b == ""_sv && c == "te"_sv;
 }());
 
